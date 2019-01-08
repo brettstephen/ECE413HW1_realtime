@@ -63,23 +63,35 @@ classdef objOscSine < handle
         function audio = advance(obj)
             
             timeVec=(obj.currentTime+(0:(1/obj.SamplingRate):((obj.BufferSize-1)/obj.SamplingRate))).';
+            noteTime=timeVec-obj.note.startTime;
+            
             indVec=1:length(timeVec);
             
-            if all(timeVec>obj.note.endTime)                                        % After the note is over - output empty audio to indicate processing is complete
+            if all(timeVec>(obj.note.endTime+obj.Release))                                        % After the note is over - output empty audio to indicate processing is complete
                 audio=[];       
-            elseif any(timeVec>obj.note.startTime)                                  % During the note mask the time 
+            elseif any(timeVec>=obj.note.startTime)                                  % During the note mask the time 
                 mask=(timeVec >= obj.note.startTime & timeVec<(obj.note.endTime+obj.releaseMaxInd));
                 mask=double(mask);
                 % Insert the attack waveform
-                tmpAttackDur=(min(length(mask),obj.attackMaxInd));
-                mask(min(find(mask))+(0:(tmpAttackDur-obj.attackInd)))=obj.attackWaveform((obj.attackInd):tmpAttackDur);    % Replace the ramp up with the attach waveform
-                obj.attackInd=obj.attackInd+tmpAttackDur;
+                
+                if obj.attackInd>obj.attackMaxInd
+                    % Leave mask as all ones
+                else 
+                    tmpAttackDur=(min(length(mask),obj.attackMaxInd));
+                    mask(min(find(mask))+(0:(tmpAttackDur-1)))=obj.attackWaveform(obj.attackInd+(0:(tmpAttackDur-1)));    % Replace the ramp up with the attach waveform
+                    obj.attackInd=obj.attackInd+tmpAttackDur;
+                end
                 
                 if(any(timeVec>(obj.note.endTime)))
-                    [tmp,indRelease]=min(abs(timeVec-(obj.note.endTime)));
-                    tmpReleaseDur=(min(length(mask)-indRelease,obj.releaseMaxInd));
-                    mask(indRelease+(0:(tmpReleaseDur-obj.releaseInd)))=obj.releaseWaveform((obj.releaseInd):tmpReleaseDur);
-                    obj.releaseInd=obj.releaseInd+tmpRelaseDur;
+                    if all(timeVec<(obj.note.endTime+obj.Release))
+                        [tmp,indRelease]=min(abs(timeVec-(obj.note.endTime)));
+                        tmpReleaseDur=(min(length(mask),obj.releaseMaxInd));
+                        mask(indRelease+(0:(tmpReleaseDur-1)))=obj.releaseWaveform((obj.releaseInd+(0:(tmpReleaseDur-1))));
+                        obj.releaseInd=obj.releaseInd+tmpReleaseDur;
+                    else
+                        mask=zeros(1,obj.BufferSize).';
+                    end
+                    
                 end
                 
                 audio=mask.*sin(2*pi*obj.note.frequency*timeVec);
