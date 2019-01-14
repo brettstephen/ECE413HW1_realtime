@@ -1,7 +1,7 @@
-function playAudio(notes,constants)
+function playAudio(notes,oscParams,constants)
 
 % Instantiate Objects
-Generator = objSynthSine(notes,constants.Attack,constants.Release,constants.BufferSize,constants.SamplingRate);
+Generator = objSynthSine(notes,oscParams,constants);
 %Speaker = dsp.AudioPlayer('QueueDuration',constants.QueueDuration,'BufferSizeSource','Property','BufferSize',constants.BufferSize);
 Speaker = audioDeviceWriter('SampleRate',constants.SamplingRate,'BufferSize',constants.BufferSize);
 
@@ -10,7 +10,7 @@ pause(1)                                                % Allow soundcard time t
 
 %audio = step(Generator);
 audio = Generator.advance;
-tmp=[];
+tmp=[audio];
 while ~isempty(audio)
     step (Speaker, audio);
     

@@ -17,7 +17,7 @@ classdef objScale
         secondsPerQuarterNote                                               % The number of seconds in a quarterNote
         noteDuration                                                        % Duration of the note portion in seconds
         breathDuration                                                      % Duration of the breath portion in seconds
-        arrayNotes                  = objNote.empty(8,0);                   % Array of notes for the scale
+        arrayNotes                  = objNote.empty;                   % Array of notes for the scale
     end
     
     properties (Constant = true, GetAccess = private)

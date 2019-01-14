@@ -75,13 +75,13 @@ classdef objEnv < handle
             
             timeVec=(obj.currentTime+(0:(1/obj.constants.SamplingRate):((obj.constants.BufferSize-1)/obj.constants.SamplingRate))).';
             indVec=1:length(timeVec);
-            
+            noteTime=timeVec-obj.StartPoint;
             
             if all (timeVec < obj.StartPoint) % Note has not begun yet
                 env=zeros(1,length(indVec));
                 minLen=0;
             elseif all (timeVec < obj.ReleasePoint) % Note is still on
-                if all(timeVec < (obj.envParams.AttackTime+obj.envParams.DecayTime))
+                if all(noteTime < (obj.envParams.AttackTime+obj.envParams.DecayTime))
                     % Fill from the buffer for the early part of the envelope
                     
                     startInd=min(find(timeVec >= obj.StartPoint));
@@ -90,7 +90,7 @@ classdef objEnv < handle
                     env=[zeros(1,(startInd-1)) obj.attackDecayWaveform(obj.attackInd+(0:(minLen-1)))];
                     
                     obj.attackInd=obj.attackInd+minLen;
-                elseif any(timeVec < (obj.envParams.AttackTime+obj.envParams.DecayTime))
+                elseif any(noteTime < (obj.envParams.AttackTime+obj.envParams.DecayTime))
                     % Fill from the transistion into the sustain portion
                     minLen=min(obj.constants.BufferSize,length(obj.attackDecayWaveform)-obj.attackInd);
                     env=[obj.attackDecayWaveform(obj.attackInd+(0:(minLen-1))) repmat(obj.envParams.SustainLevel,1,obj.constants.BufferSize-minLen)];
@@ -107,11 +107,13 @@ classdef objEnv < handle
                 obj.releaseInd=obj.releaseInd+minLen;
             elseif any(timeVec < (obj.ReleasePoint + obj.envParams.ReleaseTime))
                 % finish release
-                minLen=min(obj.releaseInd+obj.constants.BufferSize-1,length(obj.releaseWaveform)-obj.releaseInd);
+                minLen=min(obj.constants.BufferSize,length(obj.releaseWaveform)-obj.releaseInd);
                 env=[obj.releaseWaveform(obj.releaseInd+(0:(minLen-1))) zeros(1,obj.constants.BufferSize-minLen)];
                 obj.releaseInd=obj.releaseInd+minLen;
             else % time vec is past end of note
                 env=[];
+                startInd=1;
+                releaseInd=1;
             end
             
             
