@@ -7,10 +7,11 @@ classdef objChord
         startingNoteNumber                                                  % MIDI note number
         temperament                 = 'equal'                               % Default to equal temperament
         key                         = 'C'                                   % Default to key of C
+        amplitude                   = 1                                     % amplitude of the whole chord
         
         % Defaults
         tempo                       = 120                                   % Beats per minute
-        noteDurationFraction        = 0.8                                   % Duration of the beat the note is played for 
+        noteDurationFraction        = 2.8                                  % Duration of the beat the note is played for 
         breathDurationFraction      = 0.2                                   % Duration pf the beat that is silent
         
         % Calculated
@@ -61,8 +62,9 @@ classdef objChord
             currentNoteNumber=obj.startingNoteNumber;
             startTime=0;
             endTime=obj.noteDuration;
+            amplitudeNote=obj.amplitude./(length(offsets)+1);
             for cnt=1:(length(offsets)+1)
-                obj.arrayNotes(cnt)=objNote(currentNoteNumber,obj.temperament,obj.key,startTime,endTime);
+                obj.arrayNotes(cnt)=objNote(currentNoteNumber,obj.temperament,obj.key,startTime,endTime,amplitudeNote);
                 
                 if cnt <= length(offsets)
                     currentNoteNumber=currentNoteNumber+offsets(cnt);

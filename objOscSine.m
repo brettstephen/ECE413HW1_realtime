@@ -58,7 +58,7 @@ classdef objOscSine < handle
                 if isempty(mask)
                     audio=[];
                 else
-                    audio=mask(:).*sin(2*pi*obj.note.frequency*timeVec);
+                    audio=obj.note.amplitude.*mask(:).*sin(2*pi*obj.note.frequency*timeVec);
                 end
             else                                                                    % Before the note begins output zeros
                 audio = zeros(1,obj.constants.BufferSize).';

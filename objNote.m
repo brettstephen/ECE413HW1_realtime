@@ -8,6 +8,7 @@ classdef objNote
         key                                                                 % Required for Just temperament
         startTime                                                           % Start of the NOte
         endTime                                                             % End time stamp of the note
+        amplitude         = 1                                               % amplitude 
         
         % Calculated
         frequency                                                           % Derived from note and temperament
@@ -26,7 +27,7 @@ classdef objNote
         justKeyRef        = [60:71;60:71]-60;
     end
     methods
-        function obj = objNote(noteNumber,temperament,key,startTime,endTime)
+        function obj = objNote(noteNumber,temperament,key,startTime,endTime,amplitude)
             if nargin >= 5
                 % Only create a non-empty object if the number of inputs is
                 % correct
@@ -35,7 +36,7 @@ classdef objNote
                 obj.key=key;
                 obj.startTime=startTime;
                 obj.endTime=endTime;
-
+                obj.amplitude=amplitude;
                 
                 freqDiff=obj.noteNumber - 69; 
                 obj.octave=floor(obj.noteNumber/12)-1;

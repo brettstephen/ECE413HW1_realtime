@@ -7,6 +7,7 @@ classdef objScale
         startingNoteNumber                                                  % MIDI note number
         temperament                 = 'equal'                               % Default to equal temperament
         key                         = 'C'                                   % Default to key of C
+        amplitude                   = 1                                     % Amplitude of the notes in the scale
         
         % Defaults
         tempo                       = 120                                   % Beats per minute
