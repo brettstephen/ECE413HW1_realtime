@@ -18,5 +18,5 @@ while ~isempty(audio)
     audio = Generator.advance;
     tmp=[tmp;audio];
 end
-
+keyboard
 
