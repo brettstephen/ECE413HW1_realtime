@@ -19,5 +19,4 @@ while ~isempty(audio)
     tmp=[tmp;audio];
 end
 
-keyboard
 

@@ -24,14 +24,14 @@ oscParams.oscAmpEnv.ReleaseTime        = .05;  % Time to release from sustain to
 
 % Play the scales
 
-% majorScaleJust=objScale('major',60,'just','C',120);
-% playAudio(majorScaleJust,constants);
+majorScaleJust=objScale('major',60,'just','C',120);
+playAudio(majorScaleJust,oscParams,constants);
 
 majorScaleEqual=objScale('major',60,'equal','C',120);
 playAudio(majorScaleEqual,oscParams,constants);
 
-% minorScaleJust=objScale('minor',60,'just','C',120);
-% playAudio(minorScaleJust,constants);
+minorScaleJust=objScale('minor',60,'just','C',120);
+playAudio(minorScaleJust,oscParams,constants);
 
 minorScaleEqual=objScale('minor',60,'equal','C',120);
 playAudio(minorScaleEqual,oscParams,constants);
@@ -42,11 +42,11 @@ playAudio(minorScaleEqual,oscParams,constants);
  playAudio(majorChordJust,oscParams,constants);
 % 
 % majorChordEqual=objChord('major',60,'equal','C',120);
-% playAudio(majorChordEqual,constants);
+% playAudio(majorChordEqual,oscParams,constants);
 % 
 % minorChordJust=objChord('minor',60,'just','C',120);
-% playAudio(majorChordJust,constants);
+% playAudio(majorChordJust,oscParams,constants);
 % 
 % minorChordEqual=objChord('minor',60,'equal','C',120);
-% playAudio(majorChordEqual,constants);
+% playAudio(majorChordEqual,oscParams,constants);
 
