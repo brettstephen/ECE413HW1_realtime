@@ -15,7 +15,7 @@ constants.TimePerBuffer                = constants.BufferSize / constants.Sampli
 oscParams                              =confOsc;
 oscParams.oscType                      = 'sine';
 oscParams.oscAmpEnv.StartPoint         = 0;
-oscParams.oscAmpEnv.ReleasePoint       = Inf;   % Time to release the note 
+oscParams.oscAmpEnv.ReleasePoint       = Inf;   % Time to release the note
 oscParams.oscAmpEnv.AttackTime         = .02;  %Attack time in seconds
 oscParams.oscAmpEnv.DecayTime          = .01;  %Decay time in seconds
 oscParams.oscAmpEnv.SustainLevel       = 0.7;  % Sustain level
@@ -24,27 +24,27 @@ oscParams.oscAmpEnv.ReleaseTime        = .05;  % Time to release from sustain to
 
 % Play the scales
 
-if 1
-    majorScaleJust=objScale('major',60,'just','C',120);
-    playAudio(majorScaleJust,oscParams,constants);
-    
-    majorScaleEqual=objScale('major',60,'equal','C',120);
-    playAudio(majorScaleEqual,oscParams,constants);
-    
-    minorScaleJust=objScale('minor',60,'just','C',120);
-    playAudio(minorScaleJust,oscParams,constants);
-    
-    minorScaleEqual=objScale('minor',60,'equal','C',120);
-    playAudio(minorScaleEqual,oscParams,constants);
-end
+
+majorScaleJust=objScale('major',60,'just','C',120);
+tmp=playAudio(majorScaleJust,oscParams,constants);
+
+majorScaleEqual=objScale('major',60,'equal','C',120);
+playAudio(majorScaleEqual,oscParams,constants);
+
+minorScaleJust=objScale('minor',60,'just','C',120);
+playAudio(minorScaleJust,oscParams,constants);
+
+minorScaleEqual=objScale('minor',60,'equal','C',120);
+playAudio(minorScaleEqual,oscParams,constants);
+
 
 % Play the chords
 majorChordJust=objChord('major',60,'just','C',120);
 playAudio(majorChordJust,oscParams,constants);
-% 
+%
 majorChordEqual=objChord('major',60,'equal','C',120);
 playAudio(majorChordEqual,oscParams,constants);
-% 
+%
 minorChordJust=objChord('minor',60,'just','C',120);
 playAudio(majorChordJust,oscParams,constants);
 

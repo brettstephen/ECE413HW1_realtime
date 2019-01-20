@@ -5,7 +5,9 @@ classdef confOsc < handle
     properties
         % Defaults
         oscType                  = 'sine';
+        oscHarms                 = 1;
         oscAmpEnv                = confEnv;
+        oscFiltEnv               = confEnv;
         oscFreqEnv               = confEnv;
     end
     %properties (GetAccess = private)
@@ -15,11 +17,17 @@ classdef confOsc < handle
             if nargin > 0
                 obj.currentTime=0;
 
+                if nargin >= 5
+                    obj.oscFreqEnv=varargin{5};
+                end
+                if nargin >= 4
+                    obj.oscFiltEnv=varargin{4};
+                end
                 if nargin >= 3
-                    obj.oscFreqEnv=varargin{3};
+                    obj.oscAmpEnv=varargin{3};
                 end
                 if nargin >= 2
-                    obj.oscAmpEnv=varargin{2};
+                    oscHarms = varargin{2}
                 end
                 if nargin >=1
                     obj.oscType=varargin{1};

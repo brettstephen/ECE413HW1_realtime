@@ -102,8 +102,8 @@ classdef objEnv < handle
             elseif any(timeVec < obj.ReleasePoint)
                 % end sustain and begin release
                 releaseInd=max(timeVec < obj.ReleasePoint);
-                minLen=min(BufferSize,length(obj.releaseWaveform)-obj.releaseInd);
-                env=[repmat(obj.sustainLevel,1,releaseInd) obj.releaseWaveform(obj.releaseInd+(0:minLen))];
+                minLen=min(obj.constants.BufferSize,length(obj.releaseWaveform)-obj.releaseInd);
+                env=[repmat(obj.envParams.SustainLevel,1,releaseInd) obj.releaseWaveform(obj.releaseInd+1+(0:(minLen-1-releaseInd)))];
                 obj.releaseInd=obj.releaseInd+minLen;
             elseif any(timeVec < (obj.ReleasePoint + obj.envParams.ReleaseTime))
                 % finish release
@@ -117,6 +117,9 @@ classdef objEnv < handle
             end
             
             
+            if ~isempty(env) && length(env)~=obj.constants.BufferSize
+                error('Improper Envelope Length!')
+            end
             
             
             obj.currentTime=obj.currentTime+(obj.constants.BufferSize/obj.constants.SamplingRate);      % Advance the internal time
