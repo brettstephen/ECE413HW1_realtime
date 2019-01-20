@@ -10,13 +10,12 @@ pause(1)                                                % Allow soundcard time t
 
 %audio = step(Generator);
 audio = Generator.advance;
-tmp=[audio];
+%tmp=[audio];
 while ~isempty(audio)
     step (Speaker, audio);
     
     %audio = step(Generator);
     audio = Generator.advance;
-    tmp=[tmp;audio];
+    %tmp=[tmp;audio];
 end
-keyboard
 

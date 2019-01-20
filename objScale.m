@@ -62,9 +62,10 @@ classdef objScale
             currentNoteNumber=obj.startingNoteNumber;
             startTime=0;
             endTime=obj.noteDuration;
+            amplitudeNote=obj.amplitude;
             for cnt=1:(length(offsets)+1)
                 
-                obj.arrayNotes(cnt)=objNote(currentNoteNumber,obj.temperament,obj.key,startTime,endTime);
+                obj.arrayNotes(cnt)=objNote(currentNoteNumber,obj.temperament,obj.key,startTime,endTime,amplitudeNote);
                 
                 if cnt <= length(offsets)
                     currentNoteNumber=currentNoteNumber+offsets(cnt);

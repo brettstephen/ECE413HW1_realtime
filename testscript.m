@@ -24,7 +24,7 @@ oscParams.oscAmpEnv.ReleaseTime        = .05;  % Time to release from sustain to
 
 % Play the scales
 
-if 0
+if 1
     majorScaleJust=objScale('major',60,'just','C',120);
     playAudio(majorScaleJust,oscParams,constants);
     
