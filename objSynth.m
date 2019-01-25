@@ -1,16 +1,18 @@
-
-% First draft a Synthesizer Object
-
-%classdef objSynthSine < matlab.System
-classdef objSynth < handle
+classdef objSynth < matlab.System
+    % untitled Add summary here
+    %
+    % This template includes the minimum set of functions required
+    % to define a System object with discrete state.
+    
+    % Public, tunable properties
     properties
-        % Defaults                              
-        oscConfig                   = confOsc;                               
+        notes;
+        oscConfig                   = confOsc;
         constants                   = confConstants;
     end
-    properties
-        %properties (GetAccess = private)
-        % Private members
+    
+    % Pre-computed constants
+    properties(Access = private)
         currentTime;
         arrayNotes                  = objNote.empty(8,0);
         arraySynths                 = objOsc.empty(8,0);
@@ -18,32 +20,44 @@ classdef objSynth < handle
     
     methods
         function obj = objSynth(varargin)
-            if nargin > 0
-                % Add the objects to the input
-                obj.currentTime=0;
-
-                if nargin >= 3
-                    obj.constants=varargin{3};
-                end
-                if nargin >= 2
-                    obj.oscConfig=varargin{2};
-                end
-                obj.arrayNotes=varargin{1}.arrayNotes;
-            end
+            %Constructor
+            setProperties(obj,nargin,varargin{:},'notes','oscConfig','constants');
+            
+            obj.arrayNotes=obj.notes.arrayNotes;
             
             for cntNote=1:length(obj.arrayNotes)
                 obj.arraySynths(cntNote)=objOsc(obj.arrayNotes(cntNote),obj.oscConfig,obj.constants);
             end
+        end
+    end
+    
+    
+    methods(Access = protected)
+        
+        
+%         function validateInputsImpl(~,notes,oscConfig,constants)
+%             keyboard
+%             if ~isprop(notes,'arrayNotes')
+%                 error('Invalid Notes Function')
+%             end
+%             if ~isobject(oscConfig)
+%                 error('oscConfig must be an object');
+%             end
+%             if ~isobject(constants)
+%                 error('constants must be an object');
+%             end
+%         end
+
+        function setupImpl(obj)
+            % Perform one-time calculations, such as computing constants
+
+            % Reset the time function
+            obj.currentTime=0;
             
         end
         
-    end
-    %methods (Access = protected)
-    %function audioAccumulator = stepImpl(obj)
-    
-    methods
-        function audioAccumulator = advance(obj)
-            
+        function audioAccumulator = stepImpl(obj)
+            % Implement algorithm.
             audioAccumulator=[];
             for cntNote = 1:length(obj.arrayNotes)
                 
@@ -52,15 +66,18 @@ classdef objSynth < handle
                 if ~isempty(audio)
                     if isempty(audioAccumulator)
                         audioAccumulator=audio;
+                    else
+                        audioAccumulator=audioAccumulator+audio;
                     end
-                    audioAccumulator=audioAccumulator+audio;
                 end
                 
             end
+
+        end
+        
+        function resetImpl(obj)
+            % Reset the time function
+            obj.currentTime=0;
         end
     end
 end
-
-
-
-

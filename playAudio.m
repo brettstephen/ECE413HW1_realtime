@@ -1,21 +1,32 @@
 function out=playAudio(notes,oscParams,constants)
+USE_SYSTEM=1;
 
 % Instantiate Objects
-Generator = objSynth(notes,oscParams,constants);
-%Speaker = dsp.AudioPlayer('QueueDuration',constants.QueueDuration,'BufferSizeSource','Property','BufferSize',constants.BufferSize);
+if USE_SYSTEM
+    Generator = objSynth(notes,oscParams,constants);
+else
+    Generator = objSynth_OLD(notes,oscParams,constants);
+end
+
 Speaker = audioDeviceWriter('SampleRate',constants.SamplingRate,'BufferSize',constants.BufferSize);
 
 audio=zeros(1,constants.BufferSize);
 pause(1)                                                % Allow soundcard time to start up
 
-%audio = step(Generator);
-audio = Generator.advance;
+if USE_SYSTEM
+    audio = step(Generator);
+else
+    audio = Generator.advance;
+end
 out=[audio];
 while ~isempty(audio)
     step (Speaker, audio);
     
-    %audio = step(Generator);
-    audio = Generator.advance;
+    if USE_SYSTEM
+        audio = step(Generator);
+    else
+        audio = Generator.advance;
+    end
     out=[out;audio];
 end
 
