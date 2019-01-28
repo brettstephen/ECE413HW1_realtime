@@ -14,19 +14,21 @@ classdef objSynth < matlab.System
     % Pre-computed constants
     properties(Access = private)
         currentTime;
-        arrayNotes                  = objNote.empty(8,0);
-        arraySynths                 = objOsc.empty(8,0);
+%         arrayNotes                  = objNote.empty(8,0);
+%         arraySynths                 = objOsc.empty(8,0);
+        arrayNotes                  = objNote;
+        arraySynths                 = {objOsc};
+
     end
     
     methods
         function obj = objSynth(varargin)
             %Constructor
             setProperties(obj,nargin,varargin{:},'notes','oscConfig','constants');
-            
             obj.arrayNotes=obj.notes.arrayNotes;
             
             for cntNote=1:length(obj.arrayNotes)
-                obj.arraySynths(cntNote)=objOsc(obj.arrayNotes(cntNote),obj.oscConfig,obj.constants);
+                obj.arraySynths{cntNote}=objOsc(obj.arrayNotes(cntNote),obj.oscConfig,obj.constants);
             end
         end
     end
@@ -61,7 +63,9 @@ classdef objSynth < matlab.System
             audioAccumulator=[];
             for cntNote = 1:length(obj.arrayNotes)
                 
-                audio = obj.arraySynths(cntNote).advance;
+                %audio = obj.arraySynths(cntNote).advance;
+                audio = step(obj.arraySynths{cntNote});
+                
                 %audio = step(obj.arraySynths(cntNote));
                 if ~isempty(audio)
                     if isempty(audioAccumulator)

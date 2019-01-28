@@ -1,47 +1,47 @@
-% Synthesize single note
+classdef objOsc < matlab.System
+    % untitled2 Add summary here
+    %
+    % This template includes the minimum set of functions required
+    % to define a System object with discrete state.
 
-%classdef objSynthSineNote < matlab.System
-classdef objOsc < handle
+    % Public, tunable properties
     properties
         % Defaults
+        note                        = objNote;
         oscConfig                   = confOsc;
         constants                   = confConstants;
+
     end
-    %properties (GetAccess = private)
-    properties
+
+    % Pre-computed constants
+    properties(Access = private)
         % Private members
         currentTime;
-        note                  = objNote;
         EnvGen                = objEnv;
     end
     
     methods
         function obj = objOsc(varargin)
+            %Constructor
             if nargin > 0
-                obj.currentTime=0;
+                setProperties(obj,nargin,varargin{:},'note','oscConfig','constants');
                 
-                if nargin >= 3
-                    obj.constants=varargin{3};
-                end
-                if nargin >= 2
-                    obj.oscConfig=varargin{2};
-                end
-                obj.note=varargin{1};
+                obj.EnvGen=objEnv(obj.note.startTime,obj.note.endTime,obj.oscConfig.oscAmpEnv.AttackTime,...
+                    obj.oscConfig.oscAmpEnv.DecayTime,obj.oscConfig.oscAmpEnv.SustainLevel,obj.oscConfig.oscAmpEnv.ReleaseTime,...
+                    obj.constants);
             end
-            
-            obj.EnvGen=objEnv(obj.note.startTime,obj.note.endTime,obj.oscConfig.oscAmpEnv.AttackTime,...
-                obj.oscConfig.oscAmpEnv.DecayTime,obj.oscConfig.oscAmpEnv.SustainLevel,obj.oscConfig.oscAmpEnv.ReleaseTime,...
-                obj.constants);
-            
         end
-        
     end
-    
-    %methods (Access = protected)
-    %function audio = stepImpl(~)
-    methods
-        function audio = advance(obj)
+
+    methods(Access = protected)
+        function setupImpl(obj)
+            % Perform one-time calculations, such as computing constants
             
+            % Reset the time function
+            obj.currentTime=0;
+        end
+
+        function audio = stepImpl(obj)
             obj.EnvGen.StartPoint=obj.note.startTime;   % set the end point again in case it has changed
             obj.EnvGen.ReleasePoint=obj.note.endTime;   % set the end point again in case it has changed
             
@@ -59,10 +59,13 @@ classdef objOsc < handle
                 end
             end
             obj.currentTime=obj.currentTime+(obj.constants.BufferSize/obj.constants.SamplingRate);      % Advance the internal time
+
+        end
+
+        function resetImpl(obj)
+            % Initialize / reset discrete-state properties
+            % Reset the time function
+            obj.currentTime=0;
         end
     end
 end
-
-
-
-
