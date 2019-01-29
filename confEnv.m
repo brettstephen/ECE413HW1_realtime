@@ -16,7 +16,6 @@ classdef confEnv < handle
     methods
         function obj = confEnv(varargin)
             if nargin > 0
-                obj.currentTime=0;
                 
                 if nargin >= 6
                     obj.ReleaseTime=varargin{6};

@@ -1,19 +1,24 @@
-% Synthesize single note
-
-%classdef objSynthSineNote < matlab.System
-classdef objEnv < handle
+classdef objEnv < matlab.System
+    % untitled4 Add summary here
+    %
+    % This template includes the minimum set of functions required
+    % to define a System object with discrete state.
+    
+    % Public, tunable properties
     properties
         % Defaults
         envParams                              = confEnv;
         constants                              = confConstants;
     end
-    %properties (GetAccess = private)
-    properties
+    
+    % Pre-computed constants
+    properties(Access = private)
         % Private members
-        StartPoint;
-        ReleasePoint;
+%         StartPoint;
+%         ReleasePoint;
         currentTime;
         durationPerBuffer;
+        
         attackInd
         releaseInd
         attackMaxInd
@@ -21,37 +26,38 @@ classdef objEnv < handle
         releaseMaxInd
         attackDecayWaveform
         releaseWaveform
+        
+
+%         AttackTime
+%         DecayTime
+%         SustainLevel
+%         ReleaseTime
     end
     
     methods
         function obj = objEnv(varargin)
+            %Constructor
             if nargin > 0
-                obj.currentTime=0;
+                setProperties(obj,nargin,varargin{:},...
+                    'envParams','constants');
                 
-                
-                if nargin >= 7
-                    obj.constants=varargin{7};
-                end
-                if nargin >= 6
-                    obj.envParams.ReleaseTime=varargin{6};
-                end
-                if nargin >= 5
-                    obj.envParams.SustainLevel=varargin{5};
-                end
-                if nargin >= 4
-                    obj.envParams.DecayTime=varargin{4};
-                end
-                if nargin >= 3
-                    obj.envParams.AttackTime=varargin{3};
-                end
-                if nargin >= 2
-                    obj.envParams.ReleasePoint=varargin{2};
-                end
-                if nargin >=1
-                    obj.envParams.StartPoint=varargin{1};
-                end
+%                 obj.constants=varargin{7};
+%                 obj.envParams.ReleaseTime=varargin{6};
+%                 obj.envParams.SustainLevel=varargin{5};
+%                 obj.envParams.DecayTime=varargin{4};
+%                 obj.envParams.AttackTime=varargin{3};
+%                 obj.envParams.ReleasePoint=varargin{2};
+%                 obj.envParams.StartPoint=varargin{1};
                 
             end
+        end
+    end
+    
+    methods(Access = protected)
+        function setupImpl(obj)
+            % Perform one-time calculations, such as computing constants
+            
+            obj.currentTime=0;
             obj.durationPerBuffer=obj.constants.BufferSize/obj.constants.SamplingRate;
             
             obj.attackInd=1;                        %Intialize indices for cases when buffer wraps
@@ -66,25 +72,21 @@ classdef objEnv < handle
             
         end
         
-    end
-    
-    %methods (Access = protected)
-    %function audio = stepImpl(~)
-    methods
-        function env = advance(obj)
-            
+        function env = stepImpl(obj)
+            % Implement algorithm. Calculate y as a function of input u and
+            % discrete states.
             timeVec=(obj.currentTime+(0:(1/obj.constants.SamplingRate):((obj.constants.BufferSize-1)/obj.constants.SamplingRate))).';
             indVec=1:length(timeVec);
-            noteTime=timeVec-obj.StartPoint;
+            noteTime=timeVec-obj.envParams.StartPoint;
             
-            if all (timeVec < obj.StartPoint) % Note has not begun yet
+            if all (timeVec < obj.envParams.StartPoint) % Note has not begun yet
                 env=zeros(1,length(indVec));
                 minLen=0;
-            elseif all (timeVec < obj.ReleasePoint) % Note is still on
+            elseif all (timeVec < obj.envParams.ReleasePoint) % Note is still on
                 if all(noteTime < (obj.envParams.AttackTime+obj.envParams.DecayTime))
                     % Fill from the buffer for the early part of the envelope
                     
-                    startInd=min(find(timeVec >= obj.StartPoint));
+                    startInd=min(find(timeVec >= obj.envParams.StartPoint));
                     minLen=obj.constants.BufferSize-startInd+1;
                     
                     env=[zeros(1,(startInd-1)) obj.attackDecayWaveform(obj.attackInd+(0:(minLen-1)))];
@@ -99,13 +101,13 @@ classdef objEnv < handle
                     % Fill during the sustain portion
                     env=repmat(obj.envParams.SustainLevel,1,obj.constants.BufferSize);
                 end
-            elseif any(timeVec < obj.ReleasePoint)
+            elseif any(timeVec < obj.envParams.ReleasePoint)
                 % end sustain and begin release
-                releaseInd=max(timeVec < obj.ReleasePoint);
+                releaseInd=max(timeVec < obj.envParams.ReleasePoint);
                 minLen=min(obj.constants.BufferSize,length(obj.releaseWaveform)-obj.releaseInd);
                 env=[repmat(obj.envParams.SustainLevel,1,releaseInd) obj.releaseWaveform(obj.releaseInd+1+(0:(minLen-1-releaseInd)))];
                 obj.releaseInd=obj.releaseInd+minLen;
-            elseif any(timeVec < (obj.ReleasePoint + obj.envParams.ReleaseTime))
+            elseif any(timeVec < (obj.envParams.ReleasePoint + obj.envParams.ReleaseTime))
                 % finish release
                 minLen=min(obj.constants.BufferSize,length(obj.releaseWaveform)-obj.releaseInd);
                 env=[obj.releaseWaveform(obj.releaseInd+(0:(minLen-1))) zeros(1,obj.constants.BufferSize-minLen)];
@@ -124,8 +126,14 @@ classdef objEnv < handle
             
             obj.currentTime=obj.currentTime+(obj.constants.BufferSize/obj.constants.SamplingRate);      % Advance the internal time
         end
+        
+        function resetImpl(obj)
+            % Initialize / reset discrete-state properties
+                        obj.currentTime=0;
+            obj.durationPerBuffer=obj.constants.BufferSize/obj.constants.SamplingRate;
+            
+            obj.attackInd=1;                        %Intialize indices for cases when buffer wraps
+            obj.releaseInd=1;
+        end
     end
 end
-
-
-

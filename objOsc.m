@@ -26,9 +26,12 @@ classdef objOsc < matlab.System
             if nargin > 0
                 setProperties(obj,nargin,varargin{:},'note','oscConfig','constants');
                 
-                obj.EnvGen=objEnv(obj.note.startTime,obj.note.endTime,obj.oscConfig.oscAmpEnv.AttackTime,...
-                    obj.oscConfig.oscAmpEnv.DecayTime,obj.oscConfig.oscAmpEnv.SustainLevel,obj.oscConfig.oscAmpEnv.ReleaseTime,...
-                    obj.constants);
+                tmpEnv=confEnv(obj.note.startTime,obj.note.endTime,...
+                    obj.oscConfig.oscAmpEnv.AttackTime,...
+                    obj.oscConfig.oscAmpEnv.DecayTime,...
+                    obj.oscConfig.oscAmpEnv.SustainLevel,...
+                    obj.oscConfig.oscAmpEnv.ReleaseTime);
+                obj.EnvGen=objEnv(tmpEnv,obj.constants);
             end
         end
     end
@@ -42,13 +45,14 @@ classdef objOsc < matlab.System
         end
 
         function audio = stepImpl(obj)
-            obj.EnvGen.StartPoint=obj.note.startTime;   % set the end point again in case it has changed
-            obj.EnvGen.ReleasePoint=obj.note.endTime;   % set the end point again in case it has changed
+%             obj.EnvGen.StartPoint=obj.note.startTime;   % set the end point again in case it has changed
+%             obj.EnvGen.ReleasePoint=obj.note.endTime;   % set the end point again in case it has changed
             
             timeVec=(obj.currentTime+(0:(1/obj.constants.SamplingRate):((obj.constants.BufferSize-1)/obj.constants.SamplingRate))).';
             noteTime=timeVec-obj.note.startTime;
             
-            mask = obj.EnvGen.advance;
+            %mask = obj.EnvGen.advance;
+            mask = step(obj.EnvGen);
             if isempty(mask)
                 audio=[];
             else
