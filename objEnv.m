@@ -67,8 +67,8 @@ classdef objEnv < matlab.System
             obj.decayMaxInd=ceil(obj.envParams.DecayTime.*obj.constants.SamplingRate);
             obj.releaseMaxInd=ceil(obj.envParams.ReleaseTime.*obj.constants.SamplingRate);
             
-            obj.attackDecayWaveform=[linspace(0,1,obj.attackMaxInd),linspace(1,obj.envParams.SustainLevel,obj.decayMaxInd)];
-            obj.releaseWaveform=linspace(obj.envParams.SustainLevel,0,obj.releaseMaxInd);
+            obj.attackDecayWaveform=[linspace(obj.envParams.InitialLevel,obj.envParams.MaxLevel,obj.attackMaxInd),linspace(obj.envParams.MaxLevel,obj.envParams.SustainLevel,obj.decayMaxInd)];
+            obj.releaseWaveform=linspace(obj.envParams.SustainLevel,obj.envParams.FinalLevel,obj.releaseMaxInd);
             
         end
         

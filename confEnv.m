@@ -4,12 +4,15 @@
 classdef confEnv < handle
     properties
         % Defaults
-        StartPoint                                  = 0;
+        StartPoint                                  = 0;    % Starting point for the envelope 
         ReleasePoint                                = Inf   % Time to release the note 
         AttackTime                                  = .01;  %Attack time in seconds
-        DecayTime                                   = .05;  %Decay time in seconds
+        InitialLevel                                = 0;    % Level before Attack begins.   Should be zero for amplitude may be something else depending on usage (filter / frequency)
+        DecayTime                                   = .05;  % Decay time in seconds
+        MaxLevel                                    = 1;    % Level at the furthest point.  Where the Attack changes to Decay - should be zero for amplitude functions
         SustainLevel                                = 0.7;  % Sustain level (1 being max)
         ReleaseTime                                 = .03;  % Time to release from sustain to zero
+        FinalLevel                                  = 0;    % Level at the end of the release begins.   Should be zero for amplitude may be something else depending on usage (filter / frequency)
     end
     %properties (GetAccess = private)
     
