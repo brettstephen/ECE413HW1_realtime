@@ -10,7 +10,6 @@ classdef objOsc < matlab.System
         note                        = objNote;
         oscConfig                   = confOsc;
         constants                   = confConstants;
-
     end
 
     % Pre-computed constants

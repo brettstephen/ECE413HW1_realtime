@@ -24,7 +24,7 @@ classdef objScale
     properties (Constant = true, GetAccess = private)
         % Constants
         majOffsets=[2 2 1 2 2 2 1];                                         % Half steps between notes in the major scale
-        minOffsets=[2 1 2 2 2 1 2];                                         % Half steps between notes in the minor scale
+        minOffsets=[2 1 2 2 1 2 2];                                         % Half steps between notes in the minor scale
     end
     methods
         function obj = objScale(varargin)
