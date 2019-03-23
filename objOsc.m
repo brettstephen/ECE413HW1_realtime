@@ -58,7 +58,21 @@ classdef objOsc < matlab.System
                 if all (mask == 0)
                     audio = zeros(1,obj.constants.BufferSize).';
                 else
-                    audio=obj.note.amplitude.*mask(:).*sin(2*pi*obj.note.frequency*timeVec);
+                    %audio=obj.note.amplitude.*mask(:).*sin(2*pi*obj.note.frequency*timeVec);
+                    %sine wave
+                    IMAX = 0.001;
+                    f1_env = obj.note.amplitude.*[((1:floor(length(timeVec)/4))/floor(length(timeVec)/4)).^2 ones(1,length(timeVec)-floor(length(timeVec)/4)-floor(length(timeVec)/8)) ...
+                        fliplr(((1:floor(length(timeVec)/8))/floor(length(timeVec)/8)).^2)];
+                    f2_env = obj.note.amplitude.*[fliplr(((1:floor(length(timeVec)/4))/floor(length(timeVec)/4)).^2) zeros(1,length(timeVec)-floor(length(timeVec)/4))];
+
+                    fc = obj.note.frequency;
+                    fm = 2/3*fc;
+                    IMAX = IMAX;
+                    IMIN = IMAX/2;
+                    
+                    mod_amp = fm*(IMAX-IMIN)*f2_env + fm*IMIN;
+                    mod_sig = mod_amp.*sin(2*pi*fm*timeVec.');
+                    audio = obj.note.amplitude.*mask(:).*sin(2*pi*(fc.*timeVec + mod_sig.'));
                 end
             end
             obj.currentTime=obj.currentTime+(obj.constants.BufferSize/obj.constants.SamplingRate);      % Advance the internal time

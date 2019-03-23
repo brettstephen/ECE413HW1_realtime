@@ -21,7 +21,7 @@ oscParams.oscAmpEnv.DecayTime          = .01;  %Decay time in seconds
 oscParams.oscAmpEnv.SustainLevel       = 0.7;  % Sustain level
 oscParams.oscAmpEnv.ReleaseTime        = .05;  % Time to release from sustain to zero
 
-
+midi = fread(fopen('ROW.mid'));
 % Play the scales
 
 
